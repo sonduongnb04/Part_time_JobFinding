@@ -1,0 +1,10 @@
+# Đảm bảo tất cả file .cs dùng CRLF trên Windows
+*.cs text eol=crlf
+*.csproj text eol=crlf
+*.json text eol=crlf
+*.config text eol=crlf
+
+# File nhị phân không đổi line ending
+*.png binary
+*.jpg binary
+*.dll binary

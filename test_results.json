@@ -1,0 +1,143 @@
+{
+  "total": 27,
+  "passed": 0,
+  "failed": 7,
+  "skipped": 20,
+  "details": [
+    {
+      "test": "Register Student",
+      "status": "failed",
+      "message": "Failed to register student"
+    },
+    {
+      "test": "Register Employer",
+      "status": "failed",
+      "message": "Failed to register employer"
+    },
+    {
+      "test": "Login Student",
+      "status": "failed",
+      "message": "Failed to login student"
+    },
+    {
+      "test": "Login Employer",
+      "status": "failed",
+      "message": "Failed to login employer"
+    },
+    {
+      "test": "Refresh Token",
+      "status": "skipped",
+      "message": "No refresh token available"
+    },
+    {
+      "test": "Create Company",
+      "status": "skipped",
+      "message": "No employer token"
+    },
+    {
+      "test": "Get Company",
+      "status": "skipped",
+      "message": "No company ID"
+    },
+    {
+      "test": "Get All Companies",
+      "status": "failed",
+      "message": "Failed to get companies"
+    },
+    {
+      "test": "Get My Company",
+      "status": "skipped",
+      "message": "No employer token"
+    },
+    {
+      "test": "Update Company",
+      "status": "skipped",
+      "message": "Missing token or company ID"
+    },
+    {
+      "test": "Create Profile",
+      "status": "skipped",
+      "message": "No student token"
+    },
+    {
+      "test": "Get My Profile",
+      "status": "skipped",
+      "message": "No student token"
+    },
+    {
+      "test": "Get Profile By ID",
+      "status": "skipped",
+      "message": "No profile ID"
+    },
+    {
+      "test": "Create Job Post",
+      "status": "skipped",
+      "message": "Missing employer token or company ID"
+    },
+    {
+      "test": "Get All Job Posts",
+      "status": "failed",
+      "message": "Failed to get job posts"
+    },
+    {
+      "test": "Get Job Post By ID",
+      "status": "skipped",
+      "message": "No job post ID"
+    },
+    {
+      "test": "Search Job Posts",
+      "status": "failed",
+      "message": "Failed to search job posts"
+    },
+    {
+      "test": "Get Job Posts By Company",
+      "status": "skipped",
+      "message": "No company ID"
+    },
+    {
+      "test": "Update Job Post",
+      "status": "skipped",
+      "message": "Missing token or job post ID"
+    },
+    {
+      "test": "Create Application",
+      "status": "skipped",
+      "message": "Missing student token or job post ID"
+    },
+    {
+      "test": "Get My Applications",
+      "status": "skipped",
+      "message": "No student token"
+    },
+    {
+      "test": "Get Applications By Job Post",
+      "status": "skipped",
+      "message": "Missing token or job post ID"
+    },
+    {
+      "test": "Get Application By ID",
+      "status": "skipped",
+      "message": "Missing token or application ID"
+    },
+    {
+      "test": "Update Application Status",
+      "status": "skipped",
+      "message": "Missing token or application ID"
+    },
+    {
+      "test": "File Upload",
+      "status": "skipped",
+      "message": "No student token"
+    },
+    {
+      "test": "Delete Company",
+      "status": "skipped",
+      "message": "Missing token or company ID"
+    },
+    {
+      "test": "Revoke Token",
+      "status": "skipped",
+      "message": "No refresh token"
+    }
+  ]
+}
