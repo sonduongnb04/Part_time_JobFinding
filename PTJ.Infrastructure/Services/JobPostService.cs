@@ -65,21 +65,29 @@ public class JobPostService : IJobPostService
 
     public async Task<Result<PaginatedList<JobPostDto>>> SearchAsync(SearchParameters parameters, CancellationToken cancellationToken = default)
     {
-        var allJobPosts = await _unitOfWork.JobPosts.GetAllAsync(cancellationToken);
-        var query = allJobPosts.AsQueryable();
+        // Build search expression for database query (uses SQL LIKE)
+        IEnumerable<JobPost> jobPosts;
 
-        // Apply search filter
         if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
         {
-            var searchTerm = parameters.SearchTerm.ToLower();
-            query = query.Where(jp =>
-                jp.Title.ToLower().Contains(searchTerm) ||
-                jp.Description.ToLower().Contains(searchTerm) ||
-                (jp.Location != null && jp.Location.ToLower().Contains(searchTerm)));
+            var searchTerm = $"%{parameters.SearchTerm}%";
+
+            // This will be translated to SQL LIKE query by EF Core
+            jobPosts = await _unitOfWork.JobPosts.FindAsync(jp =>
+                jp.Status == JobPostStatus.Active &&
+                (EF.Functions.Like(jp.Title, searchTerm) ||
+                 EF.Functions.Like(jp.Description ?? "", searchTerm) ||
+                 EF.Functions.Like(jp.Location ?? "", searchTerm)),
+                cancellationToken);
+        }
+        else
+        {
+            jobPosts = await _unitOfWork.JobPosts.FindAsync(
+                jp => jp.Status == JobPostStatus.Active,
+                cancellationToken);
         }
 
-        // Filter active jobs
-        query = query.Where(jp => jp.Status == JobPostStatus.Active);
+        var query = jobPosts.AsQueryable();
 
         // Apply sorting
         query = !string.IsNullOrEmpty(parameters.SortBy) && parameters.SortBy.ToLower() == "salary"

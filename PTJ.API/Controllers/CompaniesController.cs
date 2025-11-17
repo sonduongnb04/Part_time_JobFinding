@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PTJ.Application.Common;
 using PTJ.Application.DTOs.Company;
 using PTJ.Application.Services;
 
@@ -40,6 +41,30 @@ public class CompaniesController : ControllerBase
     public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
     {
         var result = await _companyService.GetAllAsync(pageNumber, pageSize, cancellationToken);
+
+        if (!result.Success)
+        {
+            return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Search companies by name, description, industry, or address
+    /// </summary>
+    [HttpGet("search")]
+    public async Task<IActionResult> Search([FromQuery] string? searchTerm, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] bool sortDescending = true, CancellationToken cancellationToken = default)
+    {
+        var parameters = new SearchParameters
+        {
+            SearchTerm = searchTerm,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            SortDescending = sortDescending
+        };
+
+        var result = await _companyService.SearchAsync(parameters, cancellationToken);
 
         if (!result.Success)
         {

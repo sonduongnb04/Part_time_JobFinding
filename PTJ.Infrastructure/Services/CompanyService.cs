@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using PTJ.Application.Common;
 using PTJ.Application.DTOs.Company;
 using PTJ.Application.Services;
@@ -56,6 +57,47 @@ public class CompanyService : ICompanyService
             .ToList();
 
         var result = new PaginatedList<CompanyDto>(items, totalCount, pageNumber, pageSize);
+
+        return Result<PaginatedList<CompanyDto>>.SuccessResult(result);
+    }
+
+    public async Task<Result<PaginatedList<CompanyDto>>> SearchAsync(SearchParameters parameters, CancellationToken cancellationToken = default)
+    {
+        // Build search expression for database query (uses SQL LIKE)
+        IEnumerable<Company> companies;
+
+        if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
+        {
+            var searchTerm = $"%{parameters.SearchTerm}%";
+
+            // This will be translated to SQL LIKE query by EF Core
+            companies = await _unitOfWork.Companies.FindAsync(c =>
+                EF.Functions.Like(c.Name, searchTerm) ||
+                EF.Functions.Like(c.Description ?? "", searchTerm) ||
+                EF.Functions.Like(c.Industry ?? "", searchTerm) ||
+                EF.Functions.Like(c.Address ?? "", searchTerm),
+                cancellationToken);
+        }
+        else
+        {
+            companies = await _unitOfWork.Companies.GetAllAsync(cancellationToken);
+        }
+
+        var query = companies.AsQueryable();
+
+        // Apply sorting
+        query = parameters.SortDescending
+            ? query.OrderByDescending(c => c.CreatedAt)
+            : query.OrderBy(c => c.CreatedAt);
+
+        var totalCount = query.Count();
+        var items = query
+            .Skip((parameters.PageNumber - 1) * parameters.PageSize)
+            .Take(parameters.PageSize)
+            .Select(MapToDto)
+            .ToList();
+
+        var result = new PaginatedList<CompanyDto>(items, totalCount, parameters.PageNumber, parameters.PageSize);
 
         return Result<PaginatedList<CompanyDto>>.SuccessResult(result);
     }

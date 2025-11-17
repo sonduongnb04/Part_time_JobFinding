@@ -191,12 +191,39 @@ All services use `IUnitOfWork` for data access and return `Result<T>` objects.
 
 Controllers in `PTJ.API/Controllers/`:
 - `AuthController` - POST /api/auth/login, /register, /refresh
-- `JobPostsController` - CRUD for job posts
-- `CompaniesController` - Company profile management
+- `JobPostsController` - CRUD for job posts, search
+- `CompaniesController` - Company profile management, search
 - `CompanyRequestsController` - Admin approval of company registrations
 - `ProfilesController` - Student profile management
 - `ApplicationsController` - Job application submission and tracking
 - `FilesController` - File upload/download
+
+### Search Endpoints
+
+The API provides optimized search functionality using **SQL LIKE** queries via EF Core:
+
+**Job Post Search** (`GET /api/JobPosts/search`):
+```http
+GET /api/JobPosts/search?searchTerm=developer&pageNumber=1&pageSize=10&sortBy=salary&sortDescending=true
+```
+- Searches across: `Title`, `Description`, `Location`
+- Returns only active job posts
+- Supports pagination and sorting (by salary or createdAt)
+- Uses `EF.Functions.Like()` for database-level LIKE queries
+
+**Company Search** (`GET /api/Companies/search`):
+```http
+GET /api/Companies/search?searchTerm=tech&pageNumber=1&pageSize=10&sortDescending=true
+```
+- Searches across: `Name`, `Description`, `Industry`, `Address`
+- Supports pagination and sorting (by createdAt)
+- Uses `EF.Functions.Like()` for database-level LIKE queries
+
+**Implementation Details**:
+- Search logic in `JobPostService.SearchAsync` (JobPostService.cs:66-120) and `CompanyService.SearchAsync` (CompanyService.cs:63-102)
+- Uses `IRepository.FindAsync()` with LINQ expressions that compile to SQL LIKE
+- Pattern: `var searchTerm = $"%{parameters.SearchTerm}%";` then `EF.Functions.Like(field, searchTerm)`
+- This approach ensures queries execute in the database, not in-memory
 
 ## Middleware & Filters
 
