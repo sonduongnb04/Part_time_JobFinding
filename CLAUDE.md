@@ -64,8 +64,38 @@ This provides consistent error handling across the API.
 - **JWT Bearer authentication** with access tokens (60 min) and refresh tokens (7 days)
 - Configuration in `appsettings.json` under `"Jwt"` section
 - `IJwtService` generates tokens, `IAuthService` handles login/register/refresh
-- Role-based authorization: Users have roles (Student, Company, Admin) via `UserRole` join table
+- Role-based authorization: Users have roles (ADMIN, EMPLOYER, STUDENT) via `UserRole` join table
 - Custom filter `AuthorizeCompanyOwnerFilter` ensures companies can only modify their own data
+
+### User Registration & Role Assignment Workflow
+
+**CRITICAL**: Follow this workflow when working with user registration and company creation:
+
+1. **New User Registration** (`POST /api/auth/register`):
+   - All new users are automatically assigned the **STUDENT** role (AuthService.cs:38-48)
+   - A `Profile` entity is automatically created for every new user
+   - Users start with STUDENT role only
+
+2. **Company Registration Request** (`POST /api/Companies`):
+   - Any authenticated user can submit a company registration request
+   - Request is stored in `CompanyRegistrationRequests` table with status `Pending`
+   - **NO Company entity is created** at this stage
+   - **NO EMPLOYER role is assigned** at this stage
+   - User must wait for admin approval
+
+3. **Admin Approval Process** (`POST /api/CompanyRequests/approve`):
+   - Only users with ADMIN role can approve requests
+   - When approved (CompanyService.cs:214-265):
+     - `Company` entity is created and linked to the user
+     - `CompanyRegistrationRequest` status updated to `Approved`
+     - **EMPLOYER role is assigned** to the user (lines 252-263)
+     - User now has both STUDENT and EMPLOYER roles
+   - If rejected, request status is set to `Rejected` with rejection reason
+
+4. **Multi-Role Support**:
+   - Users can have multiple roles simultaneously (via UserRole join table)
+   - A user with EMPLOYER role still retains their STUDENT role
+   - Roles are seeded in database: ADMIN (id=1), EMPLOYER (id=2), STUDENT (id=3)
 
 ## Common Development Commands
 
@@ -128,8 +158,8 @@ dotnet restore
 - `RefreshToken` - stores refresh tokens for JWT authentication
 
 ### Company & Jobs
-- `Company` - company profiles (linked to User with role "Company")
-- `CompanyRegistrationRequest` - pending company registration approvals
+- `Company` - company profiles (created only after admin approval, linked to User with EMPLOYER role)
+- `CompanyRegistrationRequest` - pending company registration requests (status: Pending/Approved/Rejected)
 - `JobPost` - job postings with title, description, salary, location
 - `JobShift` - work shifts for a job (start/end time, day of week)
 - `JobPostSkill` - required skills for a job

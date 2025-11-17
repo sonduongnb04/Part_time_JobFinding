@@ -101,8 +101,8 @@ public class CompanyService : ICompanyService
             Industry = dto.Industry,
             EmployeeCount = dto.EmployeeCount,
             FoundedYear = dto.FoundedYear,
-            Status = Domain.Enums.CompanyRequestStatus.Pending,
-            CreatedAt = DateTime.UtcNow
+            Status = Domain.Enums.CompanyRequestStatus.Pending
+            // CreatedAt will be set automatically by AppDbContext.SaveChangesAsync
         };
 
         await _unitOfWork.CompanyRegistrationRequests.AddAsync(request, cancellationToken);
@@ -163,7 +163,7 @@ public class CompanyService : ICompanyService
         company.Industry = dto.Industry;
         company.EmployeeCount = dto.EmployeeCount;
         company.FoundedYear = dto.FoundedYear;
-        company.UpdatedAt = DateTime.UtcNow;
+        // UpdatedAt will be set automatically by AppDbContext.SaveChangesAsync
 
         _unitOfWork.Companies.Update(company);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -292,13 +292,16 @@ public class CompanyService : ICompanyService
             Industry = request.Industry,
             EmployeeCount = request.EmployeeCount,
             FoundedYear = request.FoundedYear,
-            IsVerified = true,
-            CreatedAt = DateTime.UtcNow
+            IsVerified = true
+            // CreatedAt will be set automatically by AppDbContext.SaveChangesAsync
         };
 
         await _unitOfWork.Companies.AddAsync(company, cancellationToken);
 
-        // Update request status
+        // Save company first to get the generated Id
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Update request status with the newly created company Id
         request.Status = Domain.Enums.CompanyRequestStatus.Approved;
         request.ReviewedBy = adminUserId;
         request.ReviewedAt = DateTime.UtcNow;
@@ -329,6 +332,7 @@ public class CompanyService : ICompanyService
             }
         }
 
+        // Save request update and role assignment
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var dto = MapToDto(company);
