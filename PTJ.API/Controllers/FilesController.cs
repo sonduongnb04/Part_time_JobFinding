@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PTJ.Application.DTOs.File;
 using PTJ.Application.Services;
 
 namespace PTJ.API.Controllers;
@@ -32,12 +33,6 @@ public class FilesController : ControllerBase
         }
 
         return Ok(result);
-    }
-
-    public class FileUploadRequest
-    {
-        public IFormFile File { get; set; } = null!;
-        public string? Folder { get; set; } = "general";
     }
 
     /// <summary>

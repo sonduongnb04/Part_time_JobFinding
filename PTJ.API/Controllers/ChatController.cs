@@ -126,9 +126,3 @@ public class ChatController : ControllerBase
         return int.TryParse(userIdClaim, out var userId) ? userId : 0;
     }
 }
-
-public class GetOrCreateConversationDto
-{
-    public int RecipientId { get; set; }
-    public int? JobPostId { get; set; }
-}

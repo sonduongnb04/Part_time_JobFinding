@@ -18,5 +18,4 @@ public class User : BaseAuditableEntity
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     public virtual Profile? Profile { get; set; }
     public virtual Company? Company { get; set; }
-    public virtual ICollection<JobPost> JobPosts { get; set; } = new List<JobPost>();
 }

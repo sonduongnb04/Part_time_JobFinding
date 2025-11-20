@@ -12,10 +12,12 @@ namespace PTJ.API.Controllers;
 public class ApplicationsController : ControllerBase
 {
     private readonly IApplicationService _applicationService;
+    private readonly IProfileService _profileService;
 
-    public ApplicationsController(IApplicationService applicationService)
+    public ApplicationsController(IApplicationService applicationService, IProfileService profileService)
     {
         _applicationService = applicationService;
+        _profileService = profileService;
     }
 
     /// <summary>
@@ -61,13 +63,13 @@ public class ApplicationsController : ControllerBase
         var userId = GetUserId();
 
         // Get user's profile first
-        var profileResult = await GetProfileIdByUserIdAsync(userId, cancellationToken);
-        if (profileResult == 0)
+        var profileResult = await _profileService.GetByUserIdAsync(userId, cancellationToken);
+        if (!profileResult.Success || profileResult.Data == null)
         {
             return BadRequest(new { Success = false, Message = "Profile not found" });
         }
 
-        var result = await _applicationService.GetByProfileIdAsync(profileResult, pageNumber, pageSize, cancellationToken);
+        var result = await _applicationService.GetByProfileIdAsync(profileResult.Data.Id, pageNumber, pageSize, cancellationToken);
 
         if (!result.Success)
         {
@@ -135,18 +137,5 @@ public class ApplicationsController : ControllerBase
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         return int.TryParse(userIdClaim, out var userId) ? userId : 0;
-    }
-
-    // Helper method - in real implementation, this should call ProfileService
-    private async Task<int> GetProfileIdByUserIdAsync(int userId, CancellationToken cancellationToken)
-    {
-        // This is a placeholder - should be injected via IProfileService
-        return 0;
-    }
-
-    public class UpdateApplicationStatusDto
-    {
-        public int StatusId { get; set; }
-        public string? Notes { get; set; }
     }
 }

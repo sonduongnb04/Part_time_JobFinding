@@ -27,7 +27,6 @@ public class JobPost : BaseAuditableEntity
 
     // Navigation properties
     public virtual Company Company { get; set; } = null!;
-    public new virtual User CreatedBy { get; set; } = null!;
     public virtual ICollection<JobShift> Shifts { get; set; } = new List<JobShift>();
     public virtual ICollection<JobPostSkill> RequiredSkills { get; set; } = new List<JobPostSkill>();
     public virtual ICollection<Application> Applications { get; set; } = new List<Application>();

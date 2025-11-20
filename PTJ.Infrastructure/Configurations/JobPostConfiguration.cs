@@ -53,11 +53,6 @@ public class JobPostConfiguration : IEntityTypeConfiguration<JobPost>
             .HasForeignKey(jp => jp.CompanyId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(jp => jp.CreatedBy)
-            .WithMany(u => u.JobPosts)
-            .HasForeignKey(jp => jp.CreatedByUserId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         builder.HasQueryFilter(jp => !jp.IsDeleted);
     }
 }
