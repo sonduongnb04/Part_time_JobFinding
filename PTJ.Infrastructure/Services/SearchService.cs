@@ -55,7 +55,6 @@ public class SearchService : ISearchService
         var totalCount = await query.CountAsync(cancellationToken);
 
         // Include + Paging
-        // Using AsSplitQuery to avoid Cartesian explosion with multiple includes
         var items = await query
             .Include(jp => jp.Company)
             .Include(jp => jp.Shifts)

@@ -12,6 +12,8 @@ using PTJ.Domain.Interfaces;
 using PTJ.Infrastructure.Persistence;
 using PTJ.Infrastructure.Repositories;
 using PTJ.Infrastructure.Services;
+using PTJ.Infrastructure.AI.Plugins;
+using Microsoft.SemanticKernel;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -176,6 +178,21 @@ builder.Services.AddScoped<ISearchService, SearchService>();
 // Register logging services
 builder.Services.AddScoped<IActivityLogService, ActivityLogService>();
 builder.Services.AddScoped<IErrorLogService, ErrorLogService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+
+// Register AI Services
+builder.Services.AddScoped<JobSearchPlugin>();
+builder.Services.AddScoped<IdentityPlugin>();
+builder.Services.AddScoped<ProfilePlugin>();
+builder.Services.AddScoped<JobDetailPlugin>();
+builder.Services.AddScoped<IAIChatService, AIChatService>();
+
+builder.Services.AddKernel()
+    .AddOpenAIChatCompletion(
+        modelId: "llama3", // Default model, can be changed via configuration
+        apiKey: "ignore",
+        endpoint: new Uri("http://localhost:11434/v1/")
+    );
 
 var app = builder.Build();
 

@@ -1,0 +1,30 @@
+services:
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: ptj-db
+    ports:
+      - "1433:1433" # Public SQL Server ra ngoài
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Hieu_123@ # Lưu ý thay đổi mật khẩu
+      - MSSQL_PID=Developer
+    volumes:
+      - sql_data:/var/opt/mssql
+
+  backend:
+    image: namnguyen1002/part-time-jobs-api:latest
+    container_name: ptj-api
+    depends_on:
+      - sql-server
+    ports:
+      - "8080:80" # Truy cập từ ngoài qua port 8080
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - Jwt__Issuer=PTJ.API
+      - Jwt__Audience=PTJ.CLIENT
+      - Jwt__Key=E3k!xRz#8tN2q@pF7vL1sWmG9yZ$DhU5aB*JrT0oC^KfX6iHnP%
+      - ConnectionStrings__Default=Server=sql-server;Database=PartTimeJobs;User Id=sa;Password=Hieu_123@;TrustServerCertificate=True;MultipleActiveResultSets=true
+
+volumes:
+  sql_data:
