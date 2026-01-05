@@ -124,7 +124,7 @@ public class JobPostService : IJobPostService
             Category = dto.Category,
             NumberOfPositions = dto.NumberOfPositions,
             ApplicationDeadline = dto.ApplicationDeadline,
-            Status = JobPostStatus.Active,
+            Status = JobPostStatus.Pending,
             ViewCount = 0,
             ApplicationCount = 0,
             CreatedAt = DateTime.UtcNow

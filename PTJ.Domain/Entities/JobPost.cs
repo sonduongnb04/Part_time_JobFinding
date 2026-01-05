@@ -17,6 +17,7 @@ public class JobPost : BaseAuditableEntity
     public string? Location { get; set; }
     public string? WorkType { get; set; } // Full-time, Part-time, Freelance, Internship
     public string? Category { get; set; }
+    public string? JobLevel { get; set; }
     public int? NumberOfPositions { get; set; }
     public DateTime? ApplicationDeadline { get; set; }
     public JobPostStatus Status { get; set; } = JobPostStatus.Draft;

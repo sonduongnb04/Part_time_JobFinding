@@ -57,7 +57,10 @@ public class AdminService : IAdminService
 
     public async Task<Result<PaginatedList<object>>> GetUsersAsync(string? search, int pageNumber, int pageSize)
     {
-        var query = _unitOfWork.Users.GetQueryable();
+        var query = _unitOfWork.Users.GetQueryable()
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .AsQueryable();
 
         if (!string.IsNullOrEmpty(search))
         {
@@ -85,7 +88,8 @@ public class AdminService : IAdminService
                 u.IsActive,
                 u.IsEmailVerified,
                 u.CreatedAt,
-                u.LastLoginAt
+                u.LastLoginAt,
+                Roles = u.UserRoles.Select(ur => ur.Role.Name).ToList()
             })
             .ToListAsync();
 
@@ -120,6 +124,43 @@ public class AdminService : IAdminService
         await _unitOfWork.SaveChangesAsync();
 
         return Result.SuccessResult("Job post deleted successfully");
+    }
+
+    public async Task<Result<PaginatedList<object>>> GetJobsAsync(string? search, int pageNumber, int pageSize)
+    {
+        var query = _unitOfWork.JobPosts.GetQueryable()
+            .Include(j => j.Company)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            search = search.ToLower();
+            query = query.Where(j => 
+                j.Title.ToLower().Contains(search) || 
+                j.Company.Name.ToLower().Contains(search) ||
+                (j.Location != null && j.Location.Contains(search))
+            );
+        }
+
+        var totalCount = await query.CountAsync();
+        
+        var items = await query
+            .OrderByDescending(j => j.CreatedAt)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(j => new
+            {
+                j.Id,
+                j.Title,
+                CompanyName = j.Company.Name,
+                j.Location,
+                j.Status,
+                j.CreatedAt
+            })
+            .ToListAsync();
+
+        var paginated = new PaginatedList<object>(items.Cast<object>().ToList(), totalCount, pageNumber, pageSize);
+        return Result<PaginatedList<object>>.SuccessResult(paginated);
     }
 
     public async Task<Result<object>> GetDashboardStatsAsync()

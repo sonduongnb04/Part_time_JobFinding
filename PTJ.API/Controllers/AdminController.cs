@@ -61,6 +61,16 @@ public class AdminController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("jobs")]
+    public async Task<ActionResult<Result<PaginatedList<object>>>> GetJobs(
+        [FromQuery] string? search,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        var result = await _adminService.GetJobsAsync(search, pageNumber, pageSize);
+        return Ok(result);
+    }
+
     [HttpDelete("jobs/{id}")]
     public async Task<ActionResult<Result>> DeleteJob(int id)
     {

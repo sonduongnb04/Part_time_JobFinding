@@ -6,5 +6,7 @@ public enum JobPostStatus
     Active = 1,
     Closed = 2,
     Expired = 3,
-    Archived = 4
+    Archived = 4,
+    Pending = 5,
+    Rejected = 6
 }

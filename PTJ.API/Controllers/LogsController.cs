@@ -46,9 +46,24 @@ public class LogsController : ControllerBase
             var (logs, totalCount) = await _activityLogService.GetActivityLogsAsync(
                 userId, startDate, endDate, pageNumber, pageSize);
 
+            // Map logs to format expected by frontend
+            var items = logs.Select(l => new
+            {
+                l.Id,
+                CreatedAt = l.Timestamp,
+                UserName = l.User != null ? (l.User.FullName ?? l.User.Email) : (l.UserId.HasValue ? $"User #{l.UserId}" : "Guest"),
+                l.UserId,
+                Action = MapHttpMethodToAction(l.HttpMethod, l.Path),
+                EntityType = MapPathToEntityType(l.Path),
+                EntityId = ExtractEntityId(l.Path),
+                Details = !string.IsNullOrEmpty(l.AdditionalData) ? l.AdditionalData : $"{l.HttpMethod} {l.Path}",
+                l.StatusCode,
+                l.DurationMs
+            }).ToList();
+
             var result = new
             {
-                logs,
+                items,
                 totalCount,
                 pageNumber,
                 pageSize,
@@ -181,5 +196,62 @@ public class LogsController : ControllerBase
             _logger.LogError(ex, "Failed to retrieve error statistics");
             return StatusCode(500, Result<object>.FailureResult("Failed to retrieve error statistics"));
         }
+    }
+    // =========================================================================
+    // HELPER METHODS
+    // =========================================================================
+
+    private string MapHttpMethodToAction(string method, string path)
+    {
+        if (string.IsNullOrEmpty(method)) return "Unknown";
+        
+        path = path.ToLower();
+        if (path.Contains("/login")) return "Login";
+        if (path.Contains("/logout")) return "Logout";
+        if (path.Contains("/approve")) return "Approve";
+        if (path.Contains("/reject")) return "Reject";
+        if (path.Contains("/lock")) return "Lock";
+        if (path.Contains("/unlock")) return "Unlock";
+
+        return method.ToUpper() switch
+        {
+            "POST" => "Create",
+            "PUT" => "Update",
+            "PATCH" => "Update",
+            "DELETE" => "Delete",
+            _ => "View"
+        };
+    }
+
+    private string MapPathToEntityType(string path)
+    {
+        if (string.IsNullOrEmpty(path)) return "System";
+        
+        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        // exclude 'api' prefix if exists
+        var significantSegment = segments.FirstOrDefault(s => !s.Equals("api", StringComparison.OrdinalIgnoreCase));
+        
+        return significantSegment?.ToLower() switch
+        {
+            "auth" => "Auth",
+            "jobposts" => "Job Post",
+            "companies" => "Company",
+            "companyrequests" => "Company Request",
+            "profiles" => "Profile",
+            "applications" => "Application",
+            "admin" => "Admin",
+            "users" => "User",
+            "chat" => "Chat",
+            _ => significantSegment ?? "System"
+        };
+    }
+
+    private string? ExtractEntityId(string path)
+    {
+        if (string.IsNullOrEmpty(path)) return null;
+        
+        var segments = path.Split('/');
+        // Try to find a numeric segment
+        return segments.FirstOrDefault(s => int.TryParse(s, out _));
     }
 }

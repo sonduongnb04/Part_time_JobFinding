@@ -12,6 +12,7 @@ public class CreateJobPostDto
     public string? Location { get; set; }
     public string? WorkType { get; set; }
     public string? Category { get; set; }
+    public string? JobLevel { get; set; }
     public int? NumberOfPositions { get; set; }
     public DateTime? ApplicationDeadline { get; set; }
     public List<CreateJobShiftDto> Shifts { get; set; } = new();

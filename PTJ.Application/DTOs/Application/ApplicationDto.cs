@@ -6,7 +6,9 @@ public class ApplicationDto
     public int JobPostId { get; set; }
     public string JobTitle { get; set; } = string.Empty;
     public int ProfileId { get; set; }
+    public int ApplicantUserId { get; set; }
     public string ApplicantName { get; set; } = string.Empty;
+    public int StatusId { get; set; }
     public string StatusName { get; set; } = string.Empty;
     public string? CoverLetter { get; set; }
     public string? ResumeUrl { get; set; }

@@ -13,6 +13,7 @@ public interface IAdminService
     // Job Management (Admin override)
     Task<Result> UpdateJobPostStatusAsync(int id, JobPostStatus status);
     Task<Result> DeleteJobPostAsync(int id);
+    Task<Result<PaginatedList<object>>> GetJobsAsync(string? search, int pageNumber, int pageSize);
 
     // Report/Stats
     Task<Result<object>> GetDashboardStatsAsync();

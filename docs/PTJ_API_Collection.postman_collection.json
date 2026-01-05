@@ -1,0 +1,1275 @@
+{
+    "info": {
+        "name": "PTJ - Part Time Jobs API",
+        "description": "Collection test đầy đủ API cho dự án Part Time Jobs Search Platform",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "https://localhost:7204/api",
+            "type": "string"
+        },
+        {
+            "key": "accessToken",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "refreshToken",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "userId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "companyId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "jobId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "applicationId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "profileId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "conversationId",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "1. Authentication",
+            "item": [
+                {
+                    "name": "1.1 Register - Employer",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test_employer@test.com\",\n  \"password\": \"Test@123456\",\n  \"fullName\": \"Test Employer\",\n  \"accountType\": \"EMPLOYER\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/Auth/register",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Auth",
+                                "register"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "1.2 Register - Student",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test_student@test.com\",\n  \"password\": \"Test@123456\",\n  \"fullName\": \"Test Student\",\n  \"accountType\": \"STUDENT\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/Auth/register",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Auth",
+                                "register"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "1.3 Login - Employer",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.success && jsonData.data) {",
+                                    "    pm.collectionVariables.set('accessToken', jsonData.data.accessToken);",
+                                    "    pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken);",
+                                    "    pm.collectionVariables.set('userId', jsonData.data.user.id);",
+                                    "    console.log('Tokens saved!');",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"employer@test.com\",\n  \"password\": \"Employer@123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/Auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "1.4 Login - Student",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.success && jsonData.data) {",
+                                    "    pm.collectionVariables.set('accessToken', jsonData.data.accessToken);",
+                                    "    pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken);",
+                                    "    pm.collectionVariables.set('userId', jsonData.data.user.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"student@test.com\",\n  \"password\": \"Student@123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/Auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "1.5 Login - Admin",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.success && jsonData.data) {",
+                                    "    pm.collectionVariables.set('accessToken', jsonData.data.accessToken);",
+                                    "    pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken);",
+                                    "    pm.collectionVariables.set('userId', jsonData.data.user.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"admin@ptj.com\",\n  \"password\": \"Admin@123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/Auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "1.6 Refresh Token",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.success && jsonData.data) {",
+                                    "    pm.collectionVariables.set('accessToken', jsonData.data.accessToken);",
+                                    "    pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/Auth/refresh-token",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Auth",
+                                "refresh-token"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "1.7 Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Auth/logout",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Auth",
+                                "logout"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "2. Companies",
+            "item": [
+                {
+                    "name": "2.1 Get All Companies",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Companies?page=1&pageSize=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Companies"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "pageSize",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "2.2 Get My Company",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.success && jsonData.data) {",
+                                    "    pm.collectionVariables.set('companyId', jsonData.data.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Companies/my-company",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Companies",
+                                "my-company"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "2.3 Get Company By Id",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Companies/{{companyId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Companies",
+                                "{{companyId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "2.4 Create Company",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.success && jsonData.data) {",
+                                    "    pm.collectionVariables.set('companyId', jsonData.data.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Test Company\",\n  \"description\": \"This is a test company\",\n  \"website\": \"https://testcompany.com\",\n  \"address\": \"123 Test Street, City\",\n  \"logoUrl\": \"https://example.com/logo.png\",\n  \"industry\": \"Technology\",\n  \"employeeCount\": 50,\n  \"taxCode\": \"0123456789\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/Companies",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Companies"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "2.5 Update Company",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Test Company Updated\",\n  \"description\": \"Updated description\",\n  \"website\": \"https://testcompany.com\",\n  \"address\": \"123 Test Street, City\",\n  \"logoUrl\": \"https://example.com/logo.png\",\n  \"industry\": \"Technology\",\n  \"employeeCount\": 100,\n  \"taxCode\": \"0123456789\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/Companies/{{companyId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Companies",
+                                "{{companyId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "2.6 Update Company Status (Admin)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/Companies/{{companyId}}/status",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Companies",
+                                "{{companyId}}",
+                                "status"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "3. Job Posts",
+            "item": [
+                {
+                    "name": "3.1 Get All Jobs (Public)",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/JobPosts?page=1&pageSize=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "JobPosts"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "pageSize",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "3.2 Search Jobs",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/JobPosts/search?searchTerm=developer&location=Hanoi&page=1&pageSize=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "JobPosts",
+                                "search"
+                            ],
+                            "query": [
+                                {
+                                    "key": "searchTerm",
+                                    "value": "developer"
+                                },
+                                {
+                                    "key": "location",
+                                    "value": "Hanoi"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "pageSize",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "3.3 Get Job By Id",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{baseUrl}}/JobPosts/{{jobId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "JobPosts",
+                                "{{jobId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "3.4 Get Jobs By Company",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/JobPosts/company/{{companyId}}?page=1&pageSize=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "JobPosts",
+                                "company",
+                                "{{companyId}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "pageSize",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "3.5 Create Job Post",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.success && jsonData.data) {",
+                                    "    pm.collectionVariables.set('jobId', jsonData.data.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Frontend Developer\",\n  \"description\": \"We are looking for a Frontend Developer...\",\n  \"requirements\": \"React, JavaScript, HTML, CSS\",\n  \"benefits\": \"Flexible hours, Remote work\",\n  \"location\": \"Hanoi\",\n  \"salaryMin\": 5000000,\n  \"salaryMax\": 10000000,\n  \"workType\": \"PartTime\",\n  \"category\": \"Technology\",\n  \"expiryDate\": \"2026-03-01\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/JobPosts",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "JobPosts"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "3.6 Update Job Post",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Senior Frontend Developer\",\n  \"description\": \"Updated description...\",\n  \"requirements\": \"React, TypeScript, JavaScript\",\n  \"benefits\": \"Flexible hours, Remote work, Insurance\",\n  \"location\": \"Hanoi\",\n  \"salaryMin\": 8000000,\n  \"salaryMax\": 15000000,\n  \"workType\": \"PartTime\",\n  \"category\": \"Technology\",\n  \"expiryDate\": \"2026-04-01\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/JobPosts/{{jobId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "JobPosts",
+                                "{{jobId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "3.7 Change Job Status",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/JobPosts/{{jobId}}/status",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "JobPosts",
+                                "{{jobId}}",
+                                "status"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "3.8 Delete Job Post",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/JobPosts/{{jobId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "JobPosts",
+                                "{{jobId}}"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "4. Applications",
+            "item": [
+                {
+                    "name": "4.1 Apply for Job",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.success && jsonData.data) {",
+                                    "    pm.collectionVariables.set('applicationId', jsonData.data.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"jobPostId\": \"{{jobId}}\",\n  \"coverLetter\": \"I am very interested in this position...\",\n  \"resumeUrl\": \"https://example.com/my-cv.pdf\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/Applications",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Applications"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "4.2 Get Applications By Job",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Applications/job/{{jobId}}?page=1&pageSize=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Applications",
+                                "job",
+                                "{{jobId}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "pageSize",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "4.3 Get My Applications",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Applications/my-applications?page=1&pageSize=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Applications",
+                                "my-applications"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "pageSize",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "4.4 Update Application Status",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"status\": 2,\n  \"note\": \"Invited for interview\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/Applications/{{applicationId}}/status",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Applications",
+                                "{{applicationId}}",
+                                "status"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "5. Profiles",
+            "item": [
+                {
+                    "name": "5.1 Get My Profile",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.success && jsonData.data) {",
+                                    "    pm.collectionVariables.set('profileId', jsonData.data.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Profiles/my-profile",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Profiles",
+                                "my-profile"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "5.2 Get Profile By Id",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Profiles/{{profileId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Profiles",
+                                "{{profileId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "5.3 Create/Update Profile",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"headline\": \"Frontend Developer | React Expert\",\n  \"bio\": \"Passionate developer with 3 years of experience...\",\n  \"phone\": \"0123456789\",\n  \"address\": \"Hanoi, Vietnam\",\n  \"skills\": [\n    { \"skillName\": \"React\", \"level\": 5 },\n    { \"skillName\": \"JavaScript\", \"level\": 5 },\n    { \"skillName\": \"TypeScript\", \"level\": 4 }\n  ],\n  \"experiences\": [\n    {\n      \"position\": \"Frontend Developer\",\n      \"company\": \"ABC Company\",\n      \"startDate\": \"2023-01-01\",\n      \"endDate\": null,\n      \"isCurrent\": true,\n      \"description\": \"Developing web applications using React\"\n    }\n  ],\n  \"educations\": [\n    {\n      \"school\": \"Hanoi University of Technology\",\n      \"degree\": \"Bachelor\",\n      \"fieldOfStudy\": \"Computer Science\",\n      \"startDate\": \"2019-09-01\",\n      \"endDate\": \"2023-06-01\"\n    }\n  ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/Profiles/{{profileId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Profiles",
+                                "{{profileId}}"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "6. Chat",
+            "item": [
+                {
+                    "name": "6.1 Get My Conversations",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Chat/conversations",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Chat",
+                                "conversations"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "6.2 Create Conversation",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.success && jsonData.data) {",
+                                    "    pm.collectionVariables.set('conversationId', jsonData.data.id);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"participantId\": \"USER_ID_HERE\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/Chat/conversations",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Chat",
+                                "conversations"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "6.3 Get Messages",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Chat/conversations/{{conversationId}}/messages?page=1&pageSize=50",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Chat",
+                                "conversations",
+                                "{{conversationId}}",
+                                "messages"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "pageSize",
+                                    "value": "50"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "6.4 Send Message",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"conversationId\": \"{{conversationId}}\",\n  \"content\": \"Hello! This is a test message.\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/Chat/messages",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Chat",
+                                "messages"
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "7. Admin",
+            "item": [
+                {
+                    "name": "7.1 Get Stats",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Admin/stats",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Admin",
+                                "stats"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "7.2 Get All Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Admin/users?page=1&pageSize=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Admin",
+                                "users"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "pageSize",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "7.3 Get Pending Companies",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Companies?status=0&page=1&pageSize=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Companies"
+                            ],
+                            "query": [
+                                {
+                                    "key": "status",
+                                    "value": "0"
+                                },
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "pageSize",
+                                    "value": "10"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "8. Logs",
+            "item": [
+                {
+                    "name": "8.1 Get Activity Logs",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Logs/activities?page=1&pageSize=20",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Logs",
+                                "activities"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "pageSize",
+                                    "value": "20"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "8.2 Get Error Logs",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{accessToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/Logs/errors?page=1&pageSize=20",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "Logs",
+                                "errors"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "pageSize",
+                                    "value": "20"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

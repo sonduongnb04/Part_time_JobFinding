@@ -25,13 +25,23 @@ public class SearchService : ISearchService
         // Filter
         query = query.Where(jp => jp.Status == JobPostStatus.Active);
 
+        if (!string.IsNullOrWhiteSpace(parameters.Category))
+        {
+            query = query.Where(jp => jp.Category == parameters.Category);
+        }
+
+        if (!string.IsNullOrWhiteSpace(parameters.Location))
+        {
+            var locationTerm = $"%{parameters.Location}%";
+            query = query.Where(jp => EF.Functions.Like(jp.Location ?? "", locationTerm));
+        }
+
         if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
         {
             var searchTerm = $"%{parameters.SearchTerm}%";
             query = query.Where(jp => 
                 EF.Functions.Like(jp.Title, searchTerm) || 
-                EF.Functions.Like(jp.Description ?? "", searchTerm) || 
-                EF.Functions.Like(jp.Location ?? "", searchTerm)
+                EF.Functions.Like(jp.Description ?? "", searchTerm)
             );
         }
 
