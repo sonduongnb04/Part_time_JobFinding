@@ -14,7 +14,7 @@ export default defineConfig({
       '/hubs': {
         target: 'https://aids-suitable-register-pendant.trycloudflare.com/',
         changeOrigin: true,
-        ws: true, // Enable WebSocket proxy for SignalR
+        ws: true,
       }
     }
   }

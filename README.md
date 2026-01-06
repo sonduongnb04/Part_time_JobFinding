@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Hướng Dẫn Hiểu Kiến Trúc Project
 
 ## 1. Hãy Tưởng Tượng Project Như Một Nhà Hàng 🍽️
@@ -130,3 +131,6 @@ Hãy xem cụ thể chuyện gì xảy ra khi bạn bấm nút **"Đăng Nhập"
 
 ---
 *Chúc các bạn học tốt và bảo vệ đồ án thành công!*
+=======
+# Part_time_JobFinding
+>>>>>>> 432fe0d68b32ff724d8eddeb1e258237f8246d34

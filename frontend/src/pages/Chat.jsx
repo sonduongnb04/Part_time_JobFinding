@@ -99,6 +99,35 @@ const Chat = () => {
     // EFFECTS - Xử lý side effects
     // ==========================================================================
 
+    useEffect(() => {
+        // Log để debug selectedConversation
+        // console.log('Selected Conversation changed:', selectedConversation?.id);
+
+        // Cập nhật lại listener khi selectedConversation thay đổi
+        // Điều này quan trọng để closure trong onMessage nắm bắt được selectedConversation mới nhất
+        const unsubMessage = chatSignalR.onMessage((message) => {
+            // ... (logic xử lý tin nhắn đã cập nhật ở trên)
+            // Tuy nhiên, vì chúng ta đang trong useEffect phụ thuộc vào selectedConversation,
+            // chúng ta cần đảm bảo logic này được cập nhật lại.
+
+            // NOTE: Cách tốt hơn là dùng useRef cho selectedConversation hoặc 
+            // tách logic xử lý message ra khỏi useEffect phụ thuộc selectedConversation nếu có thể.
+            // Nhưng để sửa nhanh, ta sẽ dùng ref cho selectedConversation.
+        });
+
+        return () => {
+            // unsubMessage(); // Hủy đăng ký cũ
+        }
+    }, [selectedConversation])
+
+    // GIẢI PHÁP TỐT HƠN: Dùng useRef để lưu selectedConversation hiện tại
+    const selectedConversationRef = useRef(null);
+    useEffect(() => {
+        selectedConversationRef.current = selectedConversation;
+    }, [selectedConversation]);
+
+    // ...
+
     /**
      * Effect 1: Kết nối SignalR và đăng ký event listeners
      */
@@ -112,23 +141,46 @@ const Chat = () => {
 
         // Đăng ký lắng nghe tin nhắn mới
         const unsubMessage = chatSignalR.onMessage((message) => {
-            setMessages(prev => {
-                // Kiểm tra tin nhắn đã tồn tại chưa (tránh trùng lặp)
-                if (prev.some(m => m.id === message.id)) return prev
-                return [...prev, message]
-            })
+            // Sử dụng Ref để lấy giá trị mới nhất mà không cần re-run effect
+            const currentSelectedConv = selectedConversationRef.current;
 
-            // Cập nhật danh sách cuộc trò chuyện
+            console.log('Chat.jsx - Received message:', message);
+            console.log('Current conversation:', currentSelectedConv?.id);
+            console.log('Message conversationId:', message.conversationId);
+
+            // 1. Cập nhật list Messages nếu đang mở đúng cuộc trò chuyện
+            // Chú ý: Đôi khi id có thể là string/number nên dùng == để so sánh lỏng, hoặc ép kiểu
+            if (currentSelectedConv && Number(message.conversationId) === Number(currentSelectedConv.id)) {
+                console.log('Updating messages state...');
+                setMessages(prev => {
+                    if (prev.some(m => m.id === message.id)) return prev
+                    return [...prev, message]
+                })
+
+                // Đánh dấu đã đọc ngay lập tức nếu đang mở
+                if (message.senderId !== currentUserId) {
+                    // Gọi API mark read (tùy chọn, để đảm bảo sync)
+                    // chatApi.markAsRead(message.conversationId); 
+                }
+            } else {
+                console.log('Not updating messages state. Reason:',
+                    !currentSelectedConv ? 'No conversation selected' :
+                        `Conversation mismatch: msg=${message.conversationId} vs selected=${currentSelectedConv.id}`
+                );
+            }
+
+            // 2. Cập nhật danh sách Conversations (Inbox)
             setConversations(prev => prev.map(conv => {
                 if (conv.id === message.conversationId) {
+                    const isChatOpen = currentSelectedConv?.id === message.conversationId;
                     return {
                         ...conv,
                         lastMessage: message.content,
                         lastMessageAt: message.createdAt,
-                        // Tăng unread nếu tin nhắn từ người khác
-                        unreadCount: message.senderId !== currentUserId
+                        // Tăng unread nếu tin từ người khác VÀ không đang mở chat đó
+                        unreadCount: (message.senderId !== currentUserId && !isChatOpen)
                             ? (conv.unreadCount || 0) + 1
-                            : conv.unreadCount
+                            : (isChatOpen ? 0 : conv.unreadCount) // Reset về 0 nếu đang mở
                     }
                 }
                 return conv
@@ -182,7 +234,9 @@ const Chat = () => {
 
     /**
      * Effect 5: Tham gia/rời khỏi group SignalR khi chọn cuộc trò chuyện
+     * (Tạm tắt vì server không hỗ trợ method Join/LeaveConversation)
      */
+    /*
     useEffect(() => {
         if (selectedConversation) {
             // Tham gia group để nhận tin nhắn real-time
@@ -193,6 +247,7 @@ const Chat = () => {
             }
         }
     }, [selectedConversation?.id])
+    */
 
     // ==========================================================================
     // API FUNCTIONS - Gọi API
@@ -309,10 +364,14 @@ const Chat = () => {
         setSending(true)
 
         try {
+            // Lấy thông tin người nhận
+            const otherUser = getOtherUser(selectedConversation)
+
             // Thử gửi qua SignalR trước (real-time)
             const sent = await chatSignalR.sendMessage({
                 conversationId: selectedConversation.id,
-                content: messageContent
+                content: messageContent,
+                recipientId: otherUser.id
             })
 
             // Fallback: Gửi qua HTTP nếu SignalR không hoạt động

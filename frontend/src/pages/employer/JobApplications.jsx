@@ -54,11 +54,15 @@ const JobApplications = () => {
     // CONSTANTS - Mapping trạng thái ứng viên
     // ==========================================================================
     const APP_STATUS = {
-        PENDING: 1,    // Đang chờ xử lý (Backend: Pending)
-        REVIEWED: 2,   // Đã xem (Backend: Reviewing)
-        INTERVIEW: 4,  // Mời phỏng vấn (Backend: Interviewing)
-        REJECTED: 7,   // Từ chối (Backend: Rejected)
-        HIRED: 6       // Đã tuyển (Backend: Accepted)
+        PENDING: 1,      // Pending
+        REVIEWING: 2,    // Reviewing
+        SHORTLISTED: 3,  // Shortlisted
+        INTERVIEWING: 4, // Interviewing
+        OFFERED: 5,      // Offered
+        ACCEPTED: 6,     // Accepted
+        REJECTED: 7,     // Rejected
+        WITHDRAWN: 8,    // Withdrawn
+        EXPIRED: 9       // Expired
     }
 
     // ==========================================================================
@@ -110,11 +114,11 @@ const JobApplications = () => {
 
             // Cập nhật local state
             setApplications(prev => prev.map(app =>
-                app.id === appId ? { ...app, status: newStatusId } : app
+                app.id === appId ? { ...app, statusId: newStatusId } : app
             ))
             // Cập nhật selectedApp nếu đang xem
             if (selectedApp?.id === appId) {
-                setSelectedApp(prev => ({ ...prev, status: newStatusId }))
+                setSelectedApp(prev => ({ ...prev, statusId: newStatusId }))
             }
         } catch (err) {
             alert('Không thể cập nhật trạng thái')
@@ -157,17 +161,25 @@ const JobApplications = () => {
     const getStatusBadge = (statusId) => {
         switch (statusId) {
             case APP_STATUS.PENDING:
-                return <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">Đang chờ</span>
-            case APP_STATUS.REVIEWED:
-                return <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">Đã xem</span>
-            case APP_STATUS.INTERVIEW:
-                return <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold">Phỏng vấn</span>
-            case APP_STATUS.HIRED:
-                return <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">Đã tuyển</span>
+                return <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">Pending</span>
+            case APP_STATUS.REVIEWING:
+                return <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">Reviewing</span>
+            case APP_STATUS.SHORTLISTED:
+                return <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs font-semibold">Shortlisted</span>
+            case APP_STATUS.INTERVIEWING:
+                return <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold">Interviewing</span>
+            case APP_STATUS.OFFERED:
+                return <span className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs font-semibold">Offered</span>
+            case APP_STATUS.ACCEPTED:
+                return <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold">Accepted</span>
             case APP_STATUS.REJECTED:
-                return <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-semibold">Từ chối</span>
+                return <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-semibold">Rejected</span>
+            case APP_STATUS.WITHDRAWN:
+                return <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">Withdrawn</span>
+            case APP_STATUS.EXPIRED:
+                return <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-semibold">Expired</span>
             default:
-                return <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">Không xác định</span>
+                return <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-semibold">Unknown</span>
         }
     }
 
@@ -245,7 +257,7 @@ const JobApplications = () => {
                                                     <p className="text-xs text-gray-500">{new Date(app.appliedDate).toLocaleDateString('vi-VN')}</p>
                                                 </div>
                                             </div>
-                                            {getStatusBadge(app.status)}
+                                            {getStatusBadge(app.statusId)}
                                         </div>
                                         <div className="ml-13 pl-13 text-sm text-gray-600 truncate">
                                             {app.coverLetter || 'Không có thư giới thiệu.'}
@@ -286,12 +298,12 @@ const JobApplications = () => {
                                 {/* Các nút hành động */}
                                 <div className="grid grid-cols-2 gap-3 mb-6">
                                     <button
-                                        onClick={() => handleStatusUpdate(selectedApp.id, APP_STATUS.INTERVIEW)}
+                                        onClick={() => handleStatusUpdate(selectedApp.id, APP_STATUS.INTERVIEWING)}
                                         className="flex items-center justify-center px-4 py-2 border border-purple-200 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100"
                                     >
                                         <Calendar className="w-4 h-4 mr-2" /> Phỏng vấn
                                     </button>
-                                    {selectedApp.status === APP_STATUS.HIRED ? (
+                                    {selectedApp.statusId === APP_STATUS.ACCEPTED ? (
                                         <button
                                             onClick={() => handleStatusUpdate(selectedApp.id, APP_STATUS.REJECTED)}
                                             className="flex items-center justify-center px-4 py-2 border border-gray-200 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100"
@@ -300,18 +312,12 @@ const JobApplications = () => {
                                         </button>
                                     ) : (
                                         <button
-                                            onClick={() => handleStatusUpdate(selectedApp.id, APP_STATUS.HIRED)}
+                                            onClick={() => handleStatusUpdate(selectedApp.id, APP_STATUS.ACCEPTED)}
                                             className="flex items-center justify-center px-4 py-2 border border-green-200 bg-green-50 text-green-700 rounded-lg hover:bg-green-100"
                                         >
                                             <CheckCircle className="w-4 h-4 mr-2" /> Tuyển
                                         </button>
                                     )}
-                                    <button
-                                        onClick={() => navigate(`/chat?recipientId=${selectedApp.applicantUserId}&jobPostId=${job?.id}`)}
-                                        className="flex items-center justify-center px-4 py-2 border border-blue-200 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 col-span-2"
-                                    >
-                                        <MessageSquare className="w-4 h-4 mr-2" /> Nhắn tin
-                                    </button>
                                     <button
                                         onClick={() => handleStatusUpdate(selectedApp.id, APP_STATUS.REJECTED)}
                                         className="flex items-center justify-center px-4 py-2 border border-red-200 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 col-span-2"
@@ -397,10 +403,25 @@ const JobApplications = () => {
                                             {(profileModal.profile.fullName?.[0] || 'U').toUpperCase()}
                                         </div>
                                         <div className="flex-1">
-                                            <h3 className="text-2xl font-bold text-gray-900">{profileModal.profile.fullName || 'Không rõ'}</h3>
-                                            {profileModal.profile.headline && (
-                                                <p className="text-gray-600 mt-1">{profileModal.profile.headline}</p>
-                                            )}
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <h3 className="text-2xl font-bold text-gray-900">{profileModal.profile.fullName || 'Không rõ'}</h3>
+                                                    {profileModal.profile.headline && (
+                                                        <p className="text-gray-600 mt-1">{profileModal.profile.headline}</p>
+                                                    )}
+                                                </div>
+                                                {profileModal.profile.userId && (
+                                                    <button
+                                                        onClick={() => {
+                                                            navigate(`/chat?recipientId=${profileModal.profile.userId}&jobPostId=${job?.id}`)
+                                                        }}
+                                                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                                                    >
+                                                        <MessageSquare className="w-4 h-4 mr-2" />
+                                                        Nhắn tin
+                                                    </button>
+                                                )}
+                                            </div>
                                             <div className="flex flex-wrap gap-3 mt-3 text-sm text-gray-500">
                                                 {profileModal.profile.email && (
                                                     <span className="flex items-center"><Mail className="w-4 h-4 mr-1" />{profileModal.profile.email}</span>
